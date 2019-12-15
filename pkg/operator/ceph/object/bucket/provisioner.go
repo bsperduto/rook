@@ -76,8 +76,11 @@ func (p Provisioner) Provision(options *apibkt.BucketOptions) (*bktv1alpha1.Obje
 	if err != nil {
 		return nil, fmt.Errorf("Provision: can't create ceph user: %v", err)
 	}
-
-	s3svc, err := NewS3Agent(p.accessKeyID, p.secretAccessKey, p.storeDomainName)
+	if p.storePort != 80 {
+		s3svc, err := NewS3Agent(p.accessKeyID, p.secretAccessKey, fmt.Sprintf("%s:%d", p.storeDomainName, p.storePort))
+	} else {
+		s3svc, err := NewS3Agent(p.accessKeyID, p.secretAccessKey, p.storeDomainName)
+	}
 	if err != nil {
 		return nil, err
 	}
